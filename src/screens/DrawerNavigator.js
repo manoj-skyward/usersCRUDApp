@@ -4,6 +4,7 @@ import {createDrawerNavigator} from '@react-navigation/drawer';
 import AboutUs from './AboutUs';
 import ContactUs from './ContactUs';
 import Users from './Users';
+import AddUpdateUser from './AddUpdateUser';
 
 const Drawer = createDrawerNavigator();
 
@@ -46,6 +47,23 @@ const DrawerNavigator = () => {
       <Drawer.Screen
         name="Users"
         component={Users}
+        options={{
+          drawerActiveBackgroundColor: '#262A2C',
+          //   drawerInactiveBackgroundColor: '#fff',
+          drawerItemStyle: {
+            height: 50,
+          },
+          drawerContentContainerStyle: {
+            backgroundColor: '#bab045',
+            flex: 1,
+          },
+          headerStyle: {backgroundColor: '#EBEBEB'},
+          //   drawerLabel: 'Updates',
+        }}
+      />
+      <Drawer.Screen
+        name="AddUpdateUser"
+        component={AddUpdateUser}
         options={{
           drawerActiveBackgroundColor: '#262A2C',
           //   drawerInactiveBackgroundColor: '#fff',

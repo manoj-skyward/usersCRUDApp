@@ -1,8 +1,16 @@
-import {View, Text, FlatList, Image, TouchableOpacity} from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  Image,
+  TouchableOpacity,
+  ActivityIndicator,
+  Alert,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
-import api from '../api/api';
+import api, {ACCESS_TOKEN} from '../api/api';
 
-const Users = () => {
+const Users = ({navigation}) => {
   const [users, setUsers] = useState([
     {id: 1, name: 'Manoj1'},
     {id: 2, name: 'Manoj2'},
@@ -15,130 +23,169 @@ const Users = () => {
     {id: 9, name: 'Manoj9'},
   ]);
 
-  useEffect(() => {
-    const getAllUsers = async () => {
-      try {
-        let response = await api.get('users');
-        console.log('\n\n Response is \n\n', response.data);
-        setUsers(response.data);
-      } catch (err) {
-        console.log('\n\n Something Went Wrong\n\n', err);
-      }
-    };
+  const [loaded, setLoaded] = useState(false);
 
+  useEffect(() => {
     getAllUsers();
   }, []);
 
+  const getAllUsers = async () => {
+    try {
+      let response = await api.get('/users', {
+        headers: {
+          Authorization: `Bearer ${ACCESS_TOKEN}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+      });
+      console.log('\n\n Response is \n\n', response.data);
+      setUsers(response.data);
+      setLoaded(true);
+    } catch (err) {
+      setLoaded(false);
+      console.log('\n\n Something Went Wrong\n\n', err);
+    }
+  };
+
+  const deleteUser = async id => {
+    setLoaded(false);
+    try {
+      let response = await api.delete(`/users/${id}`, {
+        headers: {
+          Authorization: `Bearer ${ACCESS_TOKEN}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+      });
+      console.log('\n\n User Deleted Successfully \n\n', response);
+      getAllUsers();
+      Alert.prompt('User Deleted Successfully');
+    } catch (err) {
+      console.log('\n\n Error in Deleteing User\n\n', err);
+    }
+  };
+
   const _renderUserCard = item => {
     return (
-      <View
-        id={item.id}
-        style={{
-          marginVertical: 5,
-          width: '95%',
-          height: 160,
-          borderRadius: 10,
-          backgroundColor: '#b6bccc',
-        }}>
+      <TouchableOpacity
+        onPress={() =>
+          navigation.navigate('AddUpdateUser', {user: item, isUpdate: true})
+        }>
         <View
+          id={item.id}
           style={{
-            flexDirection: 'row',
             marginVertical: 5,
-            marginHorizontal: 10,
+            width: '95%',
+            height: 200,
+            borderRadius: 10,
+            backgroundColor: '#b6bccc',
+            justifyContent: 'space-between',
           }}>
-          <View style={{width: '20%'}}>
-            <Text style={{fontSize: 17, fontWeight: 'bold'}}>Name: </Text>
-          </View>
           <View
             style={{
-              width: '80%',
-              alignItems: 'flex-start',
-              backgroundColor: 'yewllow',
+              flexDirection: 'row',
+              marginVertical: 5,
+              marginHorizontal: 10,
             }}>
-            <Text style={{textAlign: 'left', fontSize: 17}}>{item.name} </Text>
-          </View>
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            marginVertical: 5,
-            marginHorizontal: 10,
-          }}>
-          <View style={{width: '20%'}}>
-            <Text style={{fontSize: 17, fontWeight: 'bold'}}>Email: </Text>
-          </View>
-          <View
-            style={{
-              width: '80%',
-              alignItems: 'flex-start',
-              backgroundColor: 'yewllow',
-            }}>
-            <Text style={{textAlign: 'left', fontSize: 17}}>{item.email} </Text>
-          </View>
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            marginVertical: 5,
-            marginHorizontal: 10,
-          }}>
-          <View style={{width: '20%'}}>
-            <Text style={{fontSize: 17, fontWeight: 'bold'}}>Gender: </Text>
-          </View>
-          <View
-            style={{
-              width: '80%',
-              alignItems: 'flex-start',
-              backgroundColor: 'yewllow',
-            }}>
-            <Text style={{textAlign: 'left', fontSize: 17}}>
-              {item.gender}{' '}
-            </Text>
-          </View>
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            marginVertical: 5,
-            marginHorizontal: 10,
-          }}>
-          <View style={{width: '20%'}}>
-            <Text style={{fontSize: 17, fontWeight: 'bold'}}>Status: </Text>
-          </View>
-          <View
-            style={{
-              width: '80%',
-              alignItems: 'flex-start',
-              backgroundColor: 'yewllow',
-            }}>
-            <Text style={{textAlign: 'left', fontSize: 17}}>
-              {item.status}{' '}
-            </Text>
-          </View>
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'flex-end',
-            width: '100%',
-            marginBottom: 20,
-            // marginRight: 10,
-            // backgroundColor: 'yellow',
-          }}>
-          <TouchableOpacity>
-            <Image
-              source={require('../res/images/delete.png')}
+            <View style={{width: '20%'}}>
+              <Text style={{fontSize: 17, fontWeight: 'bold'}}>Name: </Text>
+            </View>
+            <View
               style={{
-                resizeMode: 'contain',
-                height: 25,
-                width: 25,
-                marginRight: 10,
-                // marginBottom: 30,
-              }}
-            />
-          </TouchableOpacity>
+                width: '80%',
+                alignItems: 'flex-start',
+                backgroundColor: 'yewllow',
+              }}>
+              <Text style={{textAlign: 'left', fontSize: 17}}>
+                {item.name}{' '}
+              </Text>
+            </View>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              marginVertical: 5,
+              marginHorizontal: 10,
+            }}>
+            <View style={{width: '20%'}}>
+              <Text style={{fontSize: 17, fontWeight: 'bold'}}>Email: </Text>
+            </View>
+            <View
+              style={{
+                width: '80%',
+                alignItems: 'flex-start',
+                backgroundColor: 'yewllow',
+              }}>
+              <Text style={{textAlign: 'left', fontSize: 17}}>
+                {item.email}{' '}
+              </Text>
+            </View>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              marginVertical: 5,
+              marginHorizontal: 10,
+            }}>
+            <View style={{width: '20%'}}>
+              <Text style={{fontSize: 17, fontWeight: 'bold'}}>Gender: </Text>
+            </View>
+            <View
+              style={{
+                width: '80%',
+                alignItems: 'flex-start',
+                backgroundColor: 'yewllow',
+              }}>
+              <Text style={{textAlign: 'left', fontSize: 17}}>
+                {item.gender}{' '}
+              </Text>
+            </View>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              marginVertical: 5,
+              marginHorizontal: 10,
+            }}>
+            <View style={{width: '20%'}}>
+              <Text style={{fontSize: 17, fontWeight: 'bold'}}>Status: </Text>
+            </View>
+            <View
+              style={{
+                width: '80%',
+                alignItems: 'flex-start',
+                backgroundColor: 'yewllow',
+              }}>
+              <Text style={{textAlign: 'left', fontSize: 17}}>
+                {item.status}{' '}
+              </Text>
+            </View>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'flex-end',
+              width: '100%',
+              // marginBottom: 20,
+              // marginRight: 10,
+              // backgroundColor: 'yellow',
+            }}>
+            <TouchableOpacity onPress={() => deleteUser(item.id)}>
+              <Image
+                source={require('../res/images/delete.png')}
+                style={{
+                  resizeMode: 'contain',
+                  height: 25,
+                  width: 25,
+                  marginRight: 10,
+                  // backgroundColor: 'pink',
+                  marginBottom: 10,
+                }}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
@@ -150,12 +197,18 @@ const Users = () => {
         width: '100%',
         marginLeft: 8,
       }}>
-      <FlatList
-        // horizontal={true}
-        data={users}
-        renderItem={({item}) => _renderUserCard(item)}
-        keyExtractor={item => item.id}
-      />
+      {loaded ? (
+        <>
+          <FlatList
+            // horizontal={true}
+            data={users}
+            renderItem={({item}) => _renderUserCard(item)}
+            keyExtractor={item => item.id}
+          />
+        </>
+      ) : (
+        <ActivityIndicator size="large" color="#000" />
+      )}
     </View>
   );
 };
