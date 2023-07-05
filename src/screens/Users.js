@@ -1,5 +1,6 @@
 import {View, Text, FlatList, Image, TouchableOpacity} from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
+import api from '../api/api';
 
 const Users = () => {
   const [users, setUsers] = useState([
@@ -14,9 +15,24 @@ const Users = () => {
     {id: 9, name: 'Manoj9'},
   ]);
 
+  useEffect(() => {
+    const getAllUsers = async () => {
+      try {
+        let response = await api.get('users');
+        console.log('\n\n Response is \n\n', response.data);
+        setUsers(response.data);
+      } catch (err) {
+        console.log('\n\n Something Went Wrong\n\n', err);
+      }
+    };
+
+    getAllUsers();
+  }, []);
+
   const _renderUserCard = item => {
     return (
       <View
+        id={item.id}
         style={{
           marginVertical: 5,
           width: '95%',
@@ -57,7 +73,7 @@ const Users = () => {
               alignItems: 'flex-start',
               backgroundColor: 'yewllow',
             }}>
-            <Text style={{textAlign: 'left', fontSize: 17}}>{item.name} </Text>
+            <Text style={{textAlign: 'left', fontSize: 17}}>{item.email} </Text>
           </View>
         </View>
         <View
@@ -75,7 +91,9 @@ const Users = () => {
               alignItems: 'flex-start',
               backgroundColor: 'yewllow',
             }}>
-            <Text style={{textAlign: 'left', fontSize: 17}}>{item.name} </Text>
+            <Text style={{textAlign: 'left', fontSize: 17}}>
+              {item.gender}{' '}
+            </Text>
           </View>
         </View>
         <View
@@ -93,7 +111,9 @@ const Users = () => {
               alignItems: 'flex-start',
               backgroundColor: 'yewllow',
             }}>
-            <Text style={{textAlign: 'left', fontSize: 17}}>{item.name} </Text>
+            <Text style={{textAlign: 'left', fontSize: 17}}>
+              {item.status}{' '}
+            </Text>
           </View>
         </View>
         <View
