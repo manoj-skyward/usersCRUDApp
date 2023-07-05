@@ -4,7 +4,7 @@ import api, {ACCESS_TOKEN} from '../api/api';
 import {SplashMessage} from '../Utils';
 
 const AddUpdateUser = ({route, navigation}) => {
-  //   console.log(route.params.user.email);
+  console.log(route?.params);
 
   const isUpdate = route?.params?.isUpdate || false;
 
@@ -24,7 +24,7 @@ const AddUpdateUser = ({route, navigation}) => {
       setStatus(route?.params?.user?.status);
     }
     console.log('\n\n Inside UseEffect 2\n\n');
-  }, []);
+  }, [route?.params?.user]);
 
   const addUser = async () => {
     const userObj = {

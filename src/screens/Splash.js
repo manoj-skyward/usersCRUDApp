@@ -5,7 +5,7 @@ import UserDashboard from './UserDashboard';
 const Splash = ({navigation}) => {
   useEffect(() => {
     setTimeout(() => {
-      navigation.navigate('UserDashboard');
+      navigation.navigate('Login');
     }, 2000);
   }, []);
   return (
