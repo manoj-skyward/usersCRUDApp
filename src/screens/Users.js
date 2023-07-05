@@ -5,23 +5,13 @@ import {
   Image,
   TouchableOpacity,
   ActivityIndicator,
-  Alert,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import api, {ACCESS_TOKEN} from '../api/api';
+import {SplashMessage} from '../Utils';
 
-const Users = ({navigation}) => {
-  const [users, setUsers] = useState([
-    {id: 1, name: 'Manoj1'},
-    {id: 2, name: 'Manoj2'},
-    {id: 3, name: 'Manoj3'},
-    {id: 4, name: 'Manoj4'},
-    {id: 5, name: 'Manoj5'},
-    {id: 6, name: 'Manoj6'},
-    {id: 7, name: 'Manoj7'},
-    {id: 8, name: 'Manoj8'},
-    {id: 9, name: 'Manoj9'},
-  ]);
+const Users = ({route, navigation}) => {
+  const [users, setUsers] = useState([]);
 
   const [loaded, setLoaded] = useState(false);
 
@@ -39,13 +29,17 @@ const Users = ({navigation}) => {
         },
       });
       console.log('\n\n Response is \n\n', response.data);
+
       setUsers(response.data);
       setLoaded(true);
     } catch (err) {
-      setLoaded(false);
+      setLoaded(true);
       console.log('\n\n Something Went Wrong\n\n', err);
     }
   };
+  if (route?.params?.refresh) {
+    getAllUsers();
+  }
 
   const deleteUser = async id => {
     setLoaded(false);
@@ -57,10 +51,12 @@ const Users = ({navigation}) => {
           Accept: 'application/json',
         },
       });
-      console.log('\n\n User Deleted Successfully \n\n', response);
+      SplashMessage('User Deleted Successfully');
       getAllUsers();
-      Alert.prompt('User Deleted Successfully');
+      setLoaded(true);
     } catch (err) {
+      setLoaded(true);
+      SplashMessage('Error in Deleting');
       console.log('\n\n Error in Deleteing User\n\n', err);
     }
   };
@@ -197,6 +193,31 @@ const Users = ({navigation}) => {
         width: '100%',
         marginLeft: 8,
       }}>
+      <TouchableOpacity
+        onPress={() => navigation.navigate('AddUpdateUser', {isUpdate: false})}
+        style={{
+          width: 120,
+          height: 60,
+          borderRadius: 40,
+          position: 'absolute',
+          bottom: 30,
+          right: 30,
+          backgroundColor: '#32264d',
+          zIndex: 2,
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+        <Text style={{color: '#fff'}}>ADD User </Text>
+        <Image
+          source={require('../res/images/add.png')}
+          style={{
+            zIndex: 4,
+            width: 30,
+            height: 30,
+          }}
+        />
+      </TouchableOpacity>
       {loaded ? (
         <>
           <FlatList

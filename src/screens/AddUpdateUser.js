@@ -1,9 +1,10 @@
 import {View, Text, TextInput, TouchableOpacity} from 'react-native';
-import React, {useState} from 'react';
-import api from '../api/api';
+import React, {useEffect, useState} from 'react';
+import api, {ACCESS_TOKEN} from '../api/api';
+import {SplashMessage} from '../Utils';
 
-const AddUpdateUser = ({route}) => {
-  console.log(route.params);
+const AddUpdateUser = ({route, navigation}) => {
+  //   console.log(route.params.user.email);
 
   const isUpdate = route?.params?.isUpdate || false;
 
@@ -12,32 +13,71 @@ const AddUpdateUser = ({route}) => {
   const [gender, setGender] = useState('');
   const [status, setStatus] = useState('');
 
-  if (isUpdate) {
-    setName(route?.params?.user?.name);
-    setEmail(route?.params?.user?.email);
-    setGender(route?.params?.user?.gender);
-    setStatus(route?.params?.user?.status);
-  }
+  useEffect(() => {
+    console.log('\n\n Inside UseEffect 1\n\n');
+    if (isUpdate) {
+      console.log('\n\n Inside UseEffect 3\n\n');
 
-  const generateUniqueID = () => {
-    const id = Math.ceil(Date.now() + Math.random());
-    console.log('\n\n ID is \n\n', id);
-    addUser(id);
-  };
+      setName(route?.params?.user?.name);
+      setEmail(route?.params?.user?.email);
+      setGender(route?.params?.user?.gender);
+      setStatus(route?.params?.user?.status);
+    }
+    console.log('\n\n Inside UseEffect 2\n\n');
+  }, []);
 
-  const addUser = async id => {
+  const addUser = async () => {
     const userObj = {
-      id,
       name,
       email,
       gender,
       status,
     };
     try {
-      let resp = await api.post('/user', JSON.stringify(userObj));
-      console.log('\n\n User added Successfully\n\n');
+      let resp = await api.post('/users', JSON.stringify(userObj), {
+        headers: {
+          Authorization: `Bearer ${ACCESS_TOKEN}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+      });
+      SplashMessage('User Added Successfully');
+      setName('');
+      setEmail('');
+      setGender('');
+      setStatus('');
+      navigation.navigate('Users', {refresh: true});
     } catch (err) {
+      SplashMessage('Somehting Went Wrong');
       console.log('\n\n Error Occured while adding User\n\n', err);
+    }
+  };
+
+  const updateUser = async () => {
+    const userObj = {
+      name,
+      email,
+      gender,
+      status,
+    };
+    const userID = route?.params?.user?.id;
+    try {
+      let resp = await api.put(`/users/${userID}`, JSON.stringify(userObj), {
+        headers: {
+          Authorization: `Bearer ${ACCESS_TOKEN}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+      });
+      SplashMessage('User Updated Successfully');
+      setName('');
+      setEmail('');
+      setGender('');
+      setStatus('');
+      navigation.navigate('Users', {refresh: true});
+    } catch (err) {
+      SplashMessage('Somehting Went Wrong');
+      console.log('\n\n Error Occured while Updating User\n\n', err);
     }
   };
   return (
@@ -57,6 +97,7 @@ const AddUpdateUser = ({route}) => {
           alignItems: 'center',
         }}>
         <TextInput
+          value={name}
           onChangeText={text => setName(text)}
           placeholder="Name"
           placeholderTextColor={'grey'}
@@ -71,6 +112,7 @@ const AddUpdateUser = ({route}) => {
           }}
         />
         <TextInput
+          value={email}
           placeholder="Email"
           onChangeText={text => setEmail(text)}
           placeholderTextColor={'grey'}
@@ -85,7 +127,8 @@ const AddUpdateUser = ({route}) => {
           }}
         />
         <TextInput
-          onChangeText={text => setGender(text)}
+          value={gender}
+          onChangeText={text => setGender(text.toString())}
           placeholder="Gender"
           placeholderTextColor={'grey'}
           style={{
@@ -99,6 +142,7 @@ const AddUpdateUser = ({route}) => {
           }}
         />
         <TextInput
+          value={status}
           onChangeText={text => setStatus(text)}
           placeholder="Status"
           placeholderTextColor={'grey'}
@@ -123,7 +167,21 @@ const AddUpdateUser = ({route}) => {
           justifyContent: 'center',
           alignItems: 'center',
         }}
-        onPress={generateUniqueID}>
+        onPress={() => {
+          if (name === '') {
+            SplashMessage('Please Enter Name');
+          } else if (email === '' || !email.includes('@')) {
+            SplashMessage('Please Enter a valid email');
+          } else if (gender !== 'male' && gender !== 'female') {
+            SplashMessage('Gender can be either male or female');
+          } else if (status !== 'active' && status !== 'inactive') {
+            SplashMessage('Status can be active or inactive only');
+          } else {
+            if (isUpdate) {
+              updateUser();
+            } else addUser();
+          }
+        }}>
         {/* <View style={{}}> */}
         <Text style={{color: 'white', fontSize: 18, fontWeight: 'bold'}}>
           {' '}
