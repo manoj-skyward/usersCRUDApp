@@ -80,6 +80,7 @@ const Login = ({navigation}) => {
           } else if (email === '' || !email.includes('@')) {
             SplashMessage('Please Enter a valid email');
           } else {
+            SplashMessage('Logged In Successfully');
             navigation.navigate('UserDashboard');
           }
         }}>
