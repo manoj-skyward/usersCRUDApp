@@ -5,6 +5,7 @@ import AboutUs from './AboutUs';
 import ContactUs from './ContactUs';
 import Users from './Users';
 import AddUpdateUser from './AddUpdateUser';
+import Gallery from './Gallery';
 
 const Drawer = createDrawerNavigator();
 
@@ -20,6 +21,7 @@ const DrawerNavigator = () => {
           drawerItemStyle: {
             height: 50,
           },
+
           drawerContentContainerStyle: {
             backgroundColor: '#bab045',
             flex: 1,
@@ -64,6 +66,30 @@ const DrawerNavigator = () => {
       <Drawer.Screen
         name="AddUpdateUser"
         component={AddUpdateUser}
+        options={{
+          drawerActiveBackgroundColor: '#262A2C',
+          //   drawerInactiveBackgroundColor: '#fff',
+          drawerItemStyle: {
+            height: 50,
+          },
+          drawerLabel: 'Add/Update User',
+          title: 'Add/Update User',
+
+          drawerContentContainerStyle: {
+            backgroundColor: '#bab045',
+            flex: 1,
+          },
+          headerStyle: {backgroundColor: '#EBEBEB'},
+          //   drawerLabel: 'Updates',
+        }}
+      />
+      <Drawer.Screen
+        name="Gallery"
+        component={Gallery}
+        // screenOptions={{
+        //   activeTintColor: '#e91e63',
+        //   itemStyle: {marginVertical: 5},
+        // }}
         options={{
           drawerActiveBackgroundColor: '#262A2C',
           //   drawerInactiveBackgroundColor: '#fff',

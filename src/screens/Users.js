@@ -166,6 +166,19 @@ const Users = ({route, navigation}) => {
               // marginRight: 10,
               // backgroundColor: 'yellow',
             }}>
+            <TouchableOpacity onPress={() => {}}>
+              <Image
+                source={require('../res/images/download1.png')}
+                style={{
+                  resizeMode: 'contain',
+                  height: 25,
+                  width: 25,
+                  marginRight: 10,
+                  // backgroundColor: 'pink',
+                  // marginBottom: 10,
+                }}
+              />
+            </TouchableOpacity>
             <TouchableOpacity onPress={() => deleteUser(item.id)}>
               <Image
                 source={require('../res/images/delete.png')}
