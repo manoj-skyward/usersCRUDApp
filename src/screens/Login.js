@@ -16,12 +16,6 @@ const Login = ({navigation}) => {
   const [loading, setLoading] = useState(false);
 
   return (
-    // {
-    //   loading: (<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-    //     </View>): (
-
-    //   )
-    // }
     <View
       style={{
         flex: 1,
